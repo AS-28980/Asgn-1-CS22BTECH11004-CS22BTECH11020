@@ -16,7 +16,7 @@ int yyerror(const char*);
 %token QUESTION ARROW LARROW
 %token PLUS MINUS MUL DIV MOD
 %token BIT_OR BIT_AND BIT_XOR BIT_NOT
-%token LTE GTE WTF WTFF 
+%token LTE GTE NEQ
 
 %%
     program:

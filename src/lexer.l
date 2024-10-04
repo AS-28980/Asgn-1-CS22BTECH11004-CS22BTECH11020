@@ -58,8 +58,7 @@ int line_number = 1;
 "~"         { fprintf(token_log, "%d : BITWISE OPERATOR : %s\n", line_number, yytext); return BIT_NOT; }
 "<="        { fprintf(token_log, "%d : COMPARISON OPERATOR : %s\n", line_number, yytext); return LTE; }
 ">="        { fprintf(token_log, "%d : COMPARISON OPERATOR : %s\n", line_number, yytext); return GTE; }
-"<>"        { fprintf(token_log, "%d : COMPARISON OPERATOR : %s\n", line_number, yytext); return WTF; }
-"!"         { fprintf(token_log, "%d : COMPARISON OPERATOR : %s\n", line_number, yytext); return WTFF;}
+"<>"        { fprintf(token_log, "%d : COMPARISON OPERATOR : %s\n", line_number, yytext); return NEQ; }
 
 "#".*       {  /* Ignore comments */ }
 \n          { line_number++; }

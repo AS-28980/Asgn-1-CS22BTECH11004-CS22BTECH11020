@@ -2,9 +2,19 @@
 #include <stdio.h>
 #include "lex.yy.c" // Include the lexer
 int yyerror(const char*);
+
+
 %}
 
 %define parse.error verbose
+
+%union{
+	struct s{
+      char* text;
+      int line_number;
+   }val;
+}
+
 
 %start program
 %token SET IF ELSE SIZE LOOP FINALLY RETURN FUNC PRINT
@@ -17,12 +27,14 @@ int yyerror(const char*);
 %token PLUS MINUS MUL DIV MOD
 %token BIT_OR BIT_AND BIT_XOR BIT_NOT
 %token LTE GTE NEQ
+%token INVALID_TOKEN
+
 
 %%
-    program:
+    program: set_section main_section
     ;
 
-%% // Ensure you include proper grammar rules here
+%% 
 
 int yyerror(const char* s) {
     fprintf(stderr, "Error: %s\n", s);

@@ -5,71 +5,348 @@
 #include <stdlib.h>
 #include "y.tab.h"
 
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-    #define YYSTYPE char*
-    # define YYSTYPE_IS_TRIVIAL 1
-    # define YYSTYPE_IS_DECLARED 1
-#endif
-
 FILE *token_log;
 int line_number = 1;
+
+void write_log1(char* s1, char* s2)
+{
+    fprintf(token_log, "%d : %s : %s\n", line_number, s1, s2);
+}
+
+void write_log2(char* s1, char* s2, char* s3)
+{
+    fprintf(token_log, "%d : %s : %s : %s\n", line_number, s1, s2, s3);
+}
+
 %}
 
 %%
 
-"set"       { fprintf(token_log, "%d : RESERVED WORD : %s\n", line_number, yytext); yylval = yytext; return SET; }
-"if"        { fprintf(token_log, "%d : RESERVED WORD : %s\n", line_number, yytext); yylval = yytext; return IF; }
-"else"      { fprintf(token_log, "%d : RESERVED WORD : %s\n", line_number, yytext); yylval = yytext; return ELSE; }
-"size"      { fprintf(token_log, "%d : RESERVED WORD : %s\n", line_number, yytext); yylval = yytext; return SIZE; }
-"loop"      { fprintf(token_log, "%d : RESERVED WORD : %s\n", line_number, yytext); yylval = yytext; return LOOP; }
-"finally"   { fprintf(token_log, "%d : RESERVED WORD : %s\n", line_number, yytext); yylval = yytext; return FINALLY; }
-"return"    { fprintf(token_log, "%d : RESERVED WORD : %s\n", line_number, yytext); yylval = yytext; return RETURN; }
-"func"      { fprintf(token_log, "%d : RESERVED WORD : %s\n", line_number, yytext); yylval = yytext; return FUNC; }
-"print"     { fprintf(token_log, "%d : RESERVED WORD : %s\n", line_number, yytext); yylval = yytext; return PRINT; }
+"set"       { 
+    write_log1("RESERVED WORD", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return SET; 
+    }
 
-"int"       { fprintf(token_log, "%d : TYPE :  %s\n", line_number, yytext); yylval = yytext; return INT; }
-"float"     { fprintf(token_log, "%d : TYPE :  %s\n", line_number, yytext); yylval = yytext; return FLOAT; }
-"small"     { fprintf(token_log, "%d : TYPE :  %s\n", line_number, yytext); yylval = yytext; return SMALL; } 
-"big"       { fprintf(token_log, "%d : TYPE :  %s\n", line_number, yytext); yylval = yytext; return BIG; }
+"if"        { 
+    write_log1("RESERVED WORD", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return IF; 
+    }
 
-"or"        { fprintf(token_log, "%d : LOGICAL OPERATOR : %s\n", line_number, yytext); yylval = yytext; return OR; }
-"and"       { fprintf(token_log, "%d : LOGICAL OPERATOR : %s\n", line_number, yytext); yylval = yytext; return AND; }
-"not"       { fprintf(token_log, "%d : LOGICAL OPERATOR : %s\n", line_number, yytext); yylval = yytext; return NOT; }
+"else"      { 
+    write_log1("RESERVED WORD", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return ELSE; 
+    }
 
-[a-zA-Z_][a-zA-Z0-9_]*      { fprintf(token_log, "%d : IDENTIFIER : %s\n", line_number, yytext); yylval = yytext; return IDENTIFIER; }
-[0-9]*\.[0-9]+              { fprintf(token_log, "%d : FLOAT CONSTANT : %s\n", line_number, yytext); yylval = yytext; return FLOAT_CONSTANT; }
-[0-9]+                      { fprintf(token_log, "%d : INT CONSTANT : %s\n", line_number, yytext); yylval = yytext; return INT_CONSTANT; }
+"size"      { 
+    write_log1("RESERVED WORD", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return SIZE; 
+    }
 
-"["         { fprintf(token_log, "%d : PUNCTUATION : ACCESS OPERATOR : %s\n", line_number, yytext); yylval = yytext; return L_SQ_PAR; }
-"]"         { fprintf(token_log, "%d : PUNCTUATION : ACCESS OPERATOR : %s\n", line_number, yytext); yylval = yytext; return  R_SQ_PAR; }
-"{"         { fprintf(token_log, "%d : PUNCTUATION : %s\n", line_number, yytext); yylval = yytext; return  L_CUR_PAR; }
-"}"         { fprintf(token_log, "%d : PUNCTUATION : %s\n", line_number, yytext); yylval = yytext; return  R_CUR_PAR; }
-"("         { fprintf(token_log, "%d : PUNCTUATION : %s\n", line_number, yytext); yylval = yytext; return  L_PAR; }
-")"         { fprintf(token_log, "%d : PUNCTUATION : %s\n", line_number, yytext); yylval = yytext; return  R_PAR; }
-":"         { fprintf(token_log, "%d : PUNCTUATION : %s\n", line_number, yytext); yylval = yytext; return COLON; }
-";"         { fprintf(token_log, "%d : PUNCTUATION : %s\n", line_number, yytext); yylval = yytext; return SEMICOLON; }
-"<"         { fprintf(token_log, "%d : PUNCTUATION : COMPARISON OPERATOR : %s\n", line_number, yytext); yylval = yytext; return LT; }
-">"         { fprintf(token_log, "%d : PUNCTUATION : COMPARISON OPERATOR : %s\n", line_number, yytext); yylval = yytext; return GT; }
-"?"         { fprintf(token_log, "%d : PUNCTUATION : %s\n", line_number, yytext); yylval = yytext; return QUESTION; }
-"->"        { fprintf(token_log, "%d : ACCESS OPERATOR : %s\n", line_number, yytext); yylval = yytext; return ARROW; }
-"<-"        { fprintf(token_log, "%d : ACCESS OPERATOR : %s\n", line_number, yytext); yylval = yytext; return LARROW; }
-"+"         { fprintf(token_log, "%d : ARITHMETIC OPERATOR : %s\n", line_number, yytext); yylval = yytext; return PLUS; }
-"-"         { fprintf(token_log, "%d : ARITHMETIC OPERATOR : %s\n", line_number, yytext); yylval = yytext; return MINUS; }
-"*"         { fprintf(token_log, "%d : ARITHMETIC OPERATOR : %s\n", line_number, yytext); yylval = yytext; return MUL; }
-"/"         { fprintf(token_log, "%d : ARITHMETIC OPERATOR : %s\n", line_number, yytext); yylval = yytext; return DIV; }
-"%"         { fprintf(token_log, "%d : ARITHMETIC OPERATOR : %s\n", line_number, yytext); yylval = yytext; return MOD; }
-"|"         { fprintf(token_log, "%d : BITWISE OPERATOR : %s\n", line_number, yytext); yylval = yytext; return BIT_OR; }
-"&"         { fprintf(token_log, "%d : BITWISE OPERATOR : %s\n", line_number, yytext); yylval = yytext; return BIT_AND; }
-"^"         { fprintf(token_log, "%d : BITWISE OPERATOR : %s\n", line_number, yytext); yylval = yytext; return BIT_XOR; }
-"~"         { fprintf(token_log, "%d : BITWISE OPERATOR : %s\n", line_number, yytext); yylval = yytext; return BIT_NOT; }
-"<="        { fprintf(token_log, "%d : COMPARISON OPERATOR : %s\n", line_number, yytext); yylval = yytext; return LTE; }
-">="        { fprintf(token_log, "%d : COMPARISON OPERATOR : %s\n", line_number, yytext); yylval = yytext; return GTE; }
-"<>"        { fprintf(token_log, "%d : COMPARISON OPERATOR : %s\n", line_number, yytext); yylval = yytext; return NEQ; }
+"loop"      { 
+    write_log1("RESERVED WORD", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return LOOP; 
+    }
+
+"finally"   { 
+    write_log1("RESERVED WORD", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return FINALLY; 
+    }
+
+"return"    { 
+    write_log1("RESERVED WORD", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return RETURN; 
+    }
+
+"func"      { 
+    write_log1("RESERVED WORD", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return FUNC; 
+    }
+    
+"print"     { 
+    write_log1("RESERVED WORD", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return PRINT; 
+    }
+
+
+
+"int"       { 
+    write_log1("TYPE", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return INT; 
+    }
+
+"float"     { 
+    write_log1("TYPE", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return FLOAT; 
+    }
+
+"small"     { 
+    write_log1("TYPE", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return SMALL; 
+    }
+
+"big"       { 
+    write_log1("TYPE", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return BIG; 
+    }
+
+
+
+"or"        { 
+    write_log1("LOGICAL OPERATOR", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return OR; 
+    }
+
+"and"       { 
+    write_log1("LOGICAL OPERATOR", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return AND; 
+    }
+
+"not"       { 
+    write_log1("LOGICAL OPERATOR", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return NOT; 
+    }
+
+
+
+[a-zA-Z_][a-zA-Z0-9_]*      { 
+    write_log1("IDENTIFIER", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return IDENTIFIER; 
+    }
+
+[0-9]*\.[0-9]+              { 
+    write_log1("FLOAT CONSTANT", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return FLOAT_CONSTANT; 
+    }
+
+[0-9]+                      { 
+    write_log1("INT CONSTANT", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return INT_CONSTANT; 
+    }
+
+
+
+"["         { 
+    write_log2("PUNCTUATION", "ACCESS OPERATOR", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return L_SQ_PAR; 
+    }
+
+"]"         { 
+    write_log2("PUNCTUATION", "ACCESS OPERATOR", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return  R_SQ_PAR; 
+    }
+
+"{"         { 
+    write_log1("PUNCTUATION", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return  L_CUR_PAR; 
+    }
+
+"}"         { 
+    write_log1("PUNCTUATION", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return  L_CUR_PAR; 
+    }
+
+"("         { 
+    write_log1("PUNCTUATION", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return  L_CUR_PAR; 
+    }
+
+")"         { 
+    write_log1("PUNCTUATION", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return  L_CUR_PAR; 
+    }
+
+":"         { 
+    write_log1("PUNCTUATION", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return  L_CUR_PAR; 
+    }
+
+";"         { 
+    write_log1("PUNCTUATION", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return  L_CUR_PAR; 
+    }
+
+"<"         { 
+    write_log2("PUNCTUATION", "COMPARISON OPERATOR", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return LT; 
+    }
+
+">"         { 
+    write_log2("PUNCTUATION", "COMPARISON OPERATOR", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return GT; 
+    }
+
+"?"         { 
+    write_log1("PUNCTUATION", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return QUESTION; 
+    }
+
+"->"        { 
+    write_log1("ACCESS OPERATOR", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return ARROW; 
+    }
+
+"<-"        { 
+    write_log1("ACCESS OPERATOR", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return LARROW; 
+    }
+
+"+"         { 
+    write_log1("ARITHMETIC OPERATOR", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return PLUS; 
+    }
+
+"-"         { 
+    write_log1("ARITHMETIC OPERATOR", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return PLUS; 
+    }
+    
+"*"         { 
+    write_log1("ARITHMETIC OPERATOR", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return PLUS; 
+    }
+    
+"/"         { 
+    write_log1("ARITHMETIC OPERATOR", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return PLUS; 
+    }
+    
+"%"         { 
+    write_log1("ARITHMETIC OPERATOR", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return PLUS; 
+    }
+    
+"|"         { 
+    write_log1("BITWISE OPERATOR", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return BIT_OR; 
+    }
+    
+"&"         { 
+    write_log1("BITWISE OPERATOR", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return BIT_OR; 
+    }
+    
+"^"         { 
+    write_log1("BITWISE OPERATOR", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return BIT_OR; 
+    }
+    
+"~"         { 
+    write_log1("BITWISE OPERATOR", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return BIT_OR; 
+    }
+    
+"<="        { 
+    write_log1("COMPARISON OPERATOR", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return LTE; 
+    }
+
+">="        { 
+    write_log1("COMPARISON OPERATOR", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return GTE; 
+    }
+
+"<>"        { 
+    write_log1("COMPARISON OPERATOR", yytext); 
+    yylval.val.text = strdup(yytext); 
+    yylval.val.line_number = line_number; 
+    return NEQ; 
+    }
 
 "#".*       {  /* Ignore comments */ }
 \n          { line_number++; }
 [ \t]+      {  /* Ignore spaces and tabs */ }
-.           {  /* Ignore any other characters */ }
+.           { 
+    write_log1("INVALID SYMBOL", yytext);
+    yylval.val.text = strdup(yytext);
+    yylval.val.line_number = line_number;
+    return INVALID_TOKEN; 
+    }
 
 %%
 

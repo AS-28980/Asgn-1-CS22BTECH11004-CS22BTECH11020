@@ -30,17 +30,24 @@ int yyerror(const char*);
 %token INVALID_TOKEN
 
 
+%right '='
+%left BIT_OR
+%left BIT_XOR
+%left BIT_AND
+%left LT GT LTE GTE NEQ
+%left PLUS MINUS
+%left MUL DIV MOD
+%right BIT_NOT
+%nonassoc L_PAR R_PAR
+
+
+
 %%
     program: set_section main_section
     ;
 
     set_section
     : SET primitive_data_type data_size ';'
-    ;
-
-    data_type
-    : primitive_data_type
-    | data_size
     ;
 
     primitive_data_type
@@ -60,6 +67,7 @@ int yyerror(const char*);
 
     statement 
     : declaration_statement
+    | assignment_statement
     ;
 
     declaration_statement
@@ -79,12 +87,62 @@ int yyerror(const char*);
     ;
 
     declaration
+    : IDENTIFIER
+    | assignment_statement
+    ;
+
+    assignment_statement
     : IDENTIFIER '=' expression
-    | IDENTIFIER
     ;
 
     expression
-    : data_type PLUS data_type
+    : L_PAR expression R_PAR
+    | expression MUL expression
+    | expression DIV expression
+    | expression MOD expression
+    | expression PLUS expression
+    | expression MINUS expression
+    | expression BIT_AND expression
+    | expression BIT_XOR expression
+    | expression BIT_OR expression
+    | expression LT expression
+    | expression GT expression
+    | expression LTE expression
+    | expression GTE expression
+    | expression NEQ expression
+    | unary_expression
+    ;
+
+    unary_expression
+    : BIT_NOT expression
+    | value
+    ;
+
+    value
+    : FLOAT_CONSTANT
+    | INT_CONSTANT
+    | accessed_value
+    | size_value
+    | function_call
+    ;
+
+    function_call
+    : IDENTIFIER L_PAR argument_list R_PAR
+    ;
+
+    argument_list
+    : argument_list ',' expression
+    | expression
+    |
+    ;
+
+    size_value
+    : SIZE L_SQ_PAR IDENTIFIER R_SQ_PAR
+    ;
+    
+    accessed_value
+    : IDENTIFIER L_SQ_PAR IDENTIFIER R_SQ_PAR
+    | IDENTIFIER L_SQ_PAR INT_CONSTANT R_SQ_PAR
     ;
 
 %%

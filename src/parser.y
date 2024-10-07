@@ -34,7 +34,60 @@ int yyerror(const char*);
     program: set_section main_section
     ;
 
-%% 
+    set_section
+    : SET primitive_data_type data_size ';'
+    ;
+
+    data_type
+    : primitive_data_type
+    | data_size
+    ;
+
+    primitive_data_type
+    : INT
+    | FLOAT
+    ;
+
+    data_size
+    : SMALL
+    | BIG
+    ;
+
+    main_section
+    : main_section statement
+    | statement
+    ;
+
+    statement 
+    : declaration_statement
+    ;
+
+    declaration_statement
+    : primitive_data_type declaration_list
+    | L_SQ_PAR primitive_data_type R_SQ_PAR IDENTIFIER
+    | L_CUR_PAR primitive_data_type COLON mappable_value R_CUR_PAR IDENTIFIER
+    ;
+
+    mappable_value
+    : IDENTIFIER
+    | L_SQ_PAR IDENTIFIER R_SQ_PAR
+    ;
+
+    declaration_list
+    : declaration_list ',' declaration
+    | declaration
+    ;
+
+    declaration
+    : IDENTIFIER '=' expression
+    | IDENTIFIER
+    ;
+
+    expression
+    : data_type PLUS data_type
+    ;
+
+%%
 
 int yyerror(const char* s) {
     fprintf(stderr, "Error: %s\n", s);

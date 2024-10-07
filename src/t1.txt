@@ -1,6 +1,20 @@
 set int small;
 set float big;
 
+
+loop (i=0, juhid=9028.9302; a<b and isuckmyself==yousuckyourself; i=i+1)
+<
+
+wow = 91003;
+
+>
+finally:
+<
+
+wow_20 = 93002;
+
+>
+
 < absent_days == 0 ?
   < marks > 70?
      grade =10;                         # body can have any number of statements

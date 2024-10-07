@@ -85,6 +85,13 @@ void write_log2(char* s1, char* s2, char* s3)
     return PRINT; 
 }
 
+"void"      {
+    write_log1("RESERVED WORD", yytext);
+    yylval.val.text = strdup(yytext);
+    yylval.val.line_number = line_number;
+    return VOID;
+}
+
 
 
 "int"       { 

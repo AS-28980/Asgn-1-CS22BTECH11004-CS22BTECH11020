@@ -17,7 +17,7 @@ int yyerror(const char*);
 
 
 %start program
-%token SET IF ELSE SIZE LOOP FINALLY RETURN FUNC PRINT
+%token SET IF ELSE SIZE LOOP FINALLY RETURN FUNC PRINT VOID
 %token INT FLOAT SMALL BIG
 %token OR AND NOT
 %token IDENTIFIER FLOAT_CONSTANT INT_CONSTANT
@@ -131,14 +131,14 @@ int yyerror(const char*);
 
 
     main_section
-    : main_section statement
-    | statement
+    : statement_list
     ;
 
     statement 
     : declaration_statement SEMICOLON
     | assignment_statement SEMICOLON
     | conditional_statement SEMICOLON
+    | loop_statement
     ;
 
     declaration_statement
@@ -162,26 +162,53 @@ int yyerror(const char*);
     ;
 
     conditional_statement
-    : if_eq else_if_eq else_eq
-	;
-
-    if_eq
-    : LT expression QUESTION statement
+    : LT predicate QUESTION statement_list optional_else_if optional_else_clause 
     ;
 
-    else_if_eq
-    : expression QUESTION statement
-    | 
+    predicate
+        : expression
+        |
+        ;
+
+    optional_else_if
+        : optional_else_if predicate QUESTION statement_list
+        | 
+        ;
+
+    optional_else_clause
+        : ELSE COLON statement_list GT 
+        | 
+        ;
+
+    statement_list
+        : statement_list statement
+        | statement
+        ;
+
+
+
+    loop_statement
+    : loop_block finally_block
     ;
 
-    else_eq
-    : ELSE COLON statement GT
-    | 
+    loop_block
+    : LOOP L_PAR initialization_list SEMICOLON predicate SEMICOLON update R_PAR LT statement_list GT
+    ;
+
+    finally_block
+    : FINALLY COLON LT statement_list GT
     ;
 
 
+    initialization_list
+    : declaration_list
+    |
+    ;
 
-    
+    update
+    : assignment_statement
+    |
+    ;
 
     
 

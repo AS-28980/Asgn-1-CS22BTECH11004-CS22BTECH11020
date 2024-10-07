@@ -34,7 +34,8 @@ int yyerror(const char*);
 %left BIT_OR
 %left BIT_XOR
 %left BIT_AND
-%left LT GT LTE GTE NEQ EQ
+%left LTE GTE NEQ EQ
+%right LT GT
 %left PLUS MINUS
 %left MUL DIV MOD
 %left AND OR
@@ -139,6 +140,30 @@ int yyerror(const char*);
     | assignment_statement SEMICOLON
     | conditional_statement SEMICOLON
     | loop_statement
+    | push_pop_statement SEMICOLON
+    | return_statement SEMICOLON
+    | print_statement SEMICOLON
+    ;
+
+    print_statement
+    : PRINT L_PAR IDENTIFIER R_PAR
+    ;
+
+    return_statement
+    : RETURN expression
+    | RETURN VOID
+    ;
+
+    push_pop_statement
+    : IDENTIFIER LT MINUS L_SQ_PAR expression R_SQ_PAR
+    | L_SQ_PAR expression R_SQ_PAR MINUS GT IDENTIFIER
+    | IDENTIFIER MINUS GT L_SQ_PAR vector_return R_SQ_PAR
+    | L_SQ_PAR R_SQ_PAR LT GT IDENTIFIER
+    ;
+
+    vector_return
+    : IDENTIFIER
+    |
     ;
 
     declaration_statement

@@ -582,10 +582,10 @@ void write_sorted_logs_to_file() {
     ;
 
     loop_block
-    : LOOP L_PAR init SEMICOLON predicate SEMICOLON update R_PAR LT statement_list GT        
+    : LOOP L_PAR init SEMICOLON predicate SEMICOLON update R_PAR COLON LT statement_list GT        
         {
             $$.line_number = $1.line_number;
-            asprintf(&$$.text, "for (%s; %s; %s){\n%s\n}\n", $3.text, $5.text, $7.text, $10.text);
+            asprintf(&$$.text, "for (%s; %s; %s){\n%s\n}\n", $3.text, $5.text, $7.text, $11.text);
         }
     ;
 
@@ -638,7 +638,7 @@ int yyerror(const char* s) {
 int main(int argc, char *argv[]) {
     token_log = fopen(argv[2], "w");
     parsed_log = fopen(argv[3], "w");
-    cpp_code = fopen("code.cpp", "w");
+    cpp_code = fopen(argv[4], "w");
     yyin = fopen(argv[1], "r");
 
     yyparse(); 

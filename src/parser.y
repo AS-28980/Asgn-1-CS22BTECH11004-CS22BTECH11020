@@ -166,6 +166,11 @@ void write_sorted_logs_to_file() {
         {
             asprintf(&$$.text, "deque <%s> %s", $2.text, $4.text);
         }
+    | L_CUR_PAR primitive_data_type COLON mappable_value R_CUR_PAR IDENTIFIER    
+        {
+            asprintf(&$$.text, "map <%s, %s> %s", $2.text, $4.text, $6.text);
+        }
+    ;
 
     return_type
     : primitive_data_type
@@ -208,11 +213,11 @@ void write_sorted_logs_to_file() {
     ;
 
     mappable_value
-    : IDENTIFIER
+    : primitive_data_type
         {
             asprintf(&$$.text, "%s", $1.text);
         }
-    | L_SQ_PAR IDENTIFIER R_SQ_PAR
+    | L_SQ_PAR primitive_data_type R_SQ_PAR
         {
             asprintf(&$$.text, "deque <%s> ", $2.text);
         }
@@ -596,9 +601,17 @@ void write_sorted_logs_to_file() {
     ;
 
     init
-    : declaration_statement
+    : primitive_data_type declaration_list          
         {
-            asprintf(&$$.text, "%s", $1.text);
+            asprintf(&$$.text, "%s %s", $1.text, $2.text);
+        }
+    | L_SQ_PAR primitive_data_type R_SQ_PAR declaration_list        
+        {
+            asprintf(&$$.text, "deque <%s> %s", $2.text, $4.text);
+        }
+    | L_CUR_PAR primitive_data_type COLON mappable_value R_CUR_PAR declaration_list         
+        {
+            asprintf(&$$.text, "map <%s, %s> %s", $2.text, $4.text, $6.text);
         }
     |   {
             asprintf(&$$.text, "");

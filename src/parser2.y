@@ -1,15 +1,55 @@
 %{
-#include <stdio.h>
+#include <iostream>
+#include <string>
+#include <vector>
+#include <sstream>
+#include <algorithm>
 #include "lex.yy.c" // Include the lexer
+
 int yyerror(const char*);
+using namespace std;
 
 FILE* parsed_log;
 
-void write_log3(char* s, int line_number)
-{
-    fprintf(parsed_log, "%d : %s \n", line_number, s);
+// Structure to store log entries with line number and content
+struct LogEntry {
+    int line_number;
+    string statement;
+    int original_order; // To maintain relative order for identical line numbers
+
+    LogEntry(int line, const string& stmt, int order)
+        : line_number(line), statement(stmt), original_order(order) {}
+};
+
+// Vector to store all log entries
+vector<LogEntry> log_entries;
+
+// Order of the entries as they are parsed
+int order_count = 0;
+
+// Modified write_log3 function to store the logs in a vector
+void write_log3(string s, int line_number) {
+    log_entries.push_back(LogEntry(line_number, s, order_count++));
 }
 
+// Sorting comparator function
+bool compare_logs(const LogEntry& a, const LogEntry& b) {
+    if (a.line_number == b.line_number) {
+        return a.original_order < b.original_order;
+    }
+    return a.line_number < b.line_number;
+}
+
+// Function to write sorted logs to the file
+void write_sorted_logs_to_file() {
+    // Sort the log entries
+    sort(log_entries.begin(), log_entries.end(), compare_logs);
+
+    // Write the sorted entries to the parsed_log file
+    for (const auto& entry : log_entries) {
+        fprintf(parsed_log, "%d : %s\n", entry.line_number, entry.statement.c_str());
+    }
+}
 %}
 
 %define parse.error verbose
@@ -20,7 +60,6 @@ void write_log3(char* s, int line_number)
       int line_number;
    }val;
 }
-
 
 %start program
 %token <val> SET IF ELSE SIZE LOOP FINALLY RETURN FUNC PRINT VOID
@@ -317,7 +356,6 @@ int yyerror(const char* s) {
     fprintf(stderr, "Error: %s\n", s);
     return 1;
 }
-
 int main(int argc, char *argv[]) {
     token_log = fopen(argv[2], "w");
     parsed_log = fopen(argv[3], "w");
@@ -325,8 +363,12 @@ int main(int argc, char *argv[]) {
 
     yyparse(); 
 
+    // After parsing, sort and write the logs to the file
+    write_sorted_logs_to_file();
+
     fclose(yyin);
     fclose(token_log);
+    fclose(parsed_log);
 
     return 0;
 }

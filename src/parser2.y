@@ -207,7 +207,7 @@ void write_sorted_logs_to_file() {
     statement 
     : declaration_statement SEMICOLON
     | assignment_statement SEMICOLON
-    | conditional_statement SEMICOLON
+    | conditional_statement 
     | loop_statement
     | push_pop_statement SEMICOLON
     | return_statement SEMICOLON
@@ -284,7 +284,9 @@ void write_sorted_logs_to_file() {
     ;
 
     conditional_statement
-    : LT predicate QUESTION statement_list optional_else_if optional_else_clause 
+    : LT predicate QUESTION statement_list optional_else_if optional_else_clause GT         {
+        write_log3("Conditional Statement", $1.line_number);
+    }
     ;
 
     predicate
@@ -293,12 +295,12 @@ void write_sorted_logs_to_file() {
         ;
 
     optional_else_if
-        : optional_else_if predicate QUESTION statement_list
+        : predicate QUESTION statement_list optional_else_if 
         | 
         ;
 
     optional_else_clause
-        : ELSE COLON statement_list GT 
+        : ELSE COLON statement_list  
         | 
         ;
 

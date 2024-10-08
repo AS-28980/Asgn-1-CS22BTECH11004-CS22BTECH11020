@@ -8,12 +8,12 @@
 FILE *token_log;
 int line_number = 1;
 
-void write_log1(char* s1, char* s2)
+void write_log1(const char* s1, const char* s2)
 {
     fprintf(token_log, "%d : %s : %s\n", line_number, s1, s2);
 }
 
-void write_log2(char* s1, char* s2, char* s3)
+void write_log2(const char* s1, const char* s2, const char* s3)
 {
     fprintf(token_log, "%d : %s : %s : %s\n", line_number, s1, s2, s3);
 }

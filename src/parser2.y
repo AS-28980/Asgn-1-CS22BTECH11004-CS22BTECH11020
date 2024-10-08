@@ -55,11 +55,12 @@ void write_log3(char* s, int line_number)
 
 %%
     program
-    : set_section main_section
+    : setup_section main_section
     ;
 
-    set_section
-    : set_section set_statement
+    setup_section
+    : setup_section set_statement
+    | setup_section function_declaration
     |
     ;
 
@@ -67,6 +68,28 @@ void write_log3(char* s, int line_number)
     : SET primitive_data_type data_size SEMICOLON       {
             write_log3("Set Statement", $1.line_number);
     }
+    ;
+
+    function_declaration
+    : FUNC IDENTIFIER L_PAR arg_decl_list SEMICOLON return_type R_PAR LT statement_list GT      {
+        write_log3("Function Declaration", $1.line_number);
+    }
+    ;
+
+    arg_decl_list
+    : arg_decl_list COMMA argument
+    | argument
+    |
+    ;
+
+    argument
+    : primitive_data_type IDENTIFIER
+    | L_SQ_PAR primitive_data_type R_SQ_PAR IDENTIFIER
+
+    return_type
+    : primitive_data_type
+    | L_SQ_PAR primitive_data_type R_SQ_PAR
+    | VOID
     ;
 
     primitive_data_type
@@ -262,23 +285,24 @@ void write_log3(char* s, int line_number)
     ;
 
     loop_block
-    : LOOP L_PAR initialization_list SEMICOLON predicate SEMICOLON update R_PAR LT statement_list GT        {
+    : LOOP L_PAR init SEMICOLON predicate SEMICOLON update R_PAR LT statement_list GT        {
         $$.line_number = $1.line_number;
     }
     ;
 
     finally_block
     : FINALLY COLON LT statement_list GT
+    |
     ;
 
-
-    initialization_list
-    : declaration_list
+    init
+    : primitive_data_type IDENTIFIER ASSGN expression
+    | L_SQ_PAR primitive_data_type R_SQ_PAR IDENTIFIER ASSGN expression
     |
     ;
 
     update
-    : assignment_statement
+    : IDENTIFIER ASSGN expression
     |
     ;
 

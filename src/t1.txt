@@ -1,8 +1,18 @@
 set int small;
+
+func total_area ( [float] h, [float] b ; float) <
+  float sum=0;
+  loop (int i=0 ; i < size[h] and i < size[b] ; i=i+1)  <
+    sum= sum+h[i]*b[i];
+  > 
+  return sum;
+>
+
+
 set float big;
 
 
-loop (i=0, juhid=9028.9302; a<b and isuckmyself==yousuckyourself; i=i+1)
+loop ([float] i = 0; a<b and isuckmyself==yousuckyourself; i=i+1)
 <
 
 wow = 91003;

@@ -3,6 +3,12 @@
 #include "lex.yy.c" // Include the lexer
 int yyerror(const char*);
 
+FILE* parsed_log;
+
+void write_log3(char* s, int line_number)
+{
+    fprintf(parsed_log, "%d : %s \n", line_number, s);
+}
 
 %}
 
@@ -17,17 +23,19 @@ int yyerror(const char*);
 
 
 %start program
-%token SET IF ELSE SIZE LOOP FINALLY RETURN FUNC PRINT VOID
-%token INT FLOAT SMALL BIG
-%token OR AND NOT
-%token IDENTIFIER FLOAT_CONSTANT INT_CONSTANT
-%token L_SQ_PAR R_SQ_PAR L_CUR_PAR R_CUR_PAR L_PAR R_PAR
-%token COLON SEMICOLON COMMA LT GT ASSGN
-%token QUESTION ARROW LARROW
-%token PLUS MINUS MUL DIV MOD
-%token BIT_OR BIT_AND BIT_XOR BIT_NOT
-%token LTE GTE NEQ EQ
-%token INVALID_TOKEN
+%token <val> SET IF ELSE SIZE LOOP FINALLY RETURN FUNC PRINT VOID
+%token <val> INT FLOAT SMALL BIG
+%token <val> OR AND NOT
+%token <val> IDENTIFIER FLOAT_CONSTANT INT_CONSTANT
+%token <val> L_SQ_PAR R_SQ_PAR L_CUR_PAR R_CUR_PAR L_PAR R_PAR
+%token <val> COLON SEMICOLON COMMA LT GT ASSGN
+%token <val> QUESTION ARROW LARROW
+%token <val> PLUS MINUS MUL DIV MOD
+%token <val> BIT_OR BIT_AND BIT_XOR BIT_NOT
+%token <val> LTE GTE NEQ EQ
+%token <val> INVALID_TOKEN
+
+%type <val> loop_block primitive_data_type
 
 
 %right '='
@@ -56,12 +64,19 @@ int yyerror(const char*);
     ;
 
     set_statement
-    : SET primitive_data_type data_size SEMICOLON
+    : SET primitive_data_type data_size SEMICOLON       {
+            write_log3("Set Statement", $1.line_number);
+    }
     ;
 
     primitive_data_type
-    : INT
-    | FLOAT
+    : INT       {
+        $$.line_number = $1.line_number;
+    }
+
+    | FLOAT     {
+        $$.line_number = $1.line_number;
+    }
     ;
 
     data_size
@@ -146,19 +161,37 @@ int yyerror(const char*);
     ;
 
     print_statement
-    : PRINT L_PAR IDENTIFIER R_PAR
+    : PRINT L_PAR value R_PAR       {
+        write_log3("Print Statement", $1.line_number);
+    }
     ;
 
     return_statement
-    : RETURN expression
-    | RETURN VOID
+    : RETURN expression             {
+        write_log3("Return Statement", $1.line_number);
+    }
+
+    | RETURN VOID                   {
+        write_log3("Return Statement", $1.line_number);
+    }
     ;
 
     push_pop_statement
-    : IDENTIFIER LT MINUS L_SQ_PAR expression R_SQ_PAR
-    | L_SQ_PAR expression R_SQ_PAR MINUS GT IDENTIFIER
-    | IDENTIFIER MINUS GT L_SQ_PAR vector_return R_SQ_PAR
-    | L_SQ_PAR R_SQ_PAR LT GT IDENTIFIER
+    : IDENTIFIER LARROW L_SQ_PAR expression R_SQ_PAR        {
+        write_log3("Push/Pop Statement", $1.line_number);
+    }
+
+    | L_SQ_PAR expression R_SQ_PAR ARROW IDENTIFIER         {
+        write_log3("Push/Pop Statement", $1.line_number);
+    }
+
+    | IDENTIFIER ARROW L_SQ_PAR vector_return R_SQ_PAR      {
+        write_log3("Push/Pop Statement", $1.line_number);
+    }
+
+    | L_SQ_PAR R_SQ_PAR LT GT IDENTIFIER                    {
+        write_log3("Push/Pop Statement", $1.line_number);
+    }
     ;
 
     vector_return
@@ -167,9 +200,17 @@ int yyerror(const char*);
     ;
 
     declaration_statement
-    : primitive_data_type declaration_list
-    | L_SQ_PAR primitive_data_type R_SQ_PAR declaration_list
-    | L_CUR_PAR primitive_data_type COLON mappable_value R_CUR_PAR declaration_list
+    : primitive_data_type declaration_list          {
+        write_log3("Variable Declaration", $1.line_number);
+    }
+
+    | L_SQ_PAR primitive_data_type R_SQ_PAR declaration_list        {
+        write_log3("Variable Declaration", $1.line_number);
+    }
+
+    | L_CUR_PAR primitive_data_type COLON mappable_value R_CUR_PAR declaration_list         {
+        write_log3("Variable Declaration", $1.line_number);
+    }
     ;
 
     declaration_list
@@ -178,12 +219,14 @@ int yyerror(const char*);
     ;
 
     declaration
-    : IDENTIFIER
-    | assignment_statement
+    : IDENTIFIER ASSGN expression
+    | IDENTIFIER
     ;
 
     assignment_statement
-    : IDENTIFIER ASSGN expression
+    : IDENTIFIER ASSGN expression       {
+        write_log3("Assignment Statement", $1.line_number);
+    }
     ;
 
     conditional_statement
@@ -213,11 +256,15 @@ int yyerror(const char*);
 
 
     loop_statement
-    : loop_block finally_block
+    : loop_block finally_block      {
+        write_log3("Loop Statement", $1.line_number);
+    }
     ;
 
     loop_block
-    : LOOP L_PAR initialization_list SEMICOLON predicate SEMICOLON update R_PAR LT statement_list GT
+    : LOOP L_PAR initialization_list SEMICOLON predicate SEMICOLON update R_PAR LT statement_list GT        {
+        $$.line_number = $1.line_number;
+    }
     ;
 
     finally_block
@@ -249,9 +296,10 @@ int yyerror(const char* s) {
 
 int main(int argc, char *argv[]) {
     token_log = fopen(argv[2], "w");
+    parsed_log = fopen(argv[3], "w");
     yyin = fopen(argv[1], "r");
 
-    yyparse(); // Call the parser instead of yylex directly
+    yyparse(); 
 
     fclose(yyin);
     fclose(token_log);

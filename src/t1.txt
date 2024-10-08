@@ -15,33 +15,15 @@ wow_20 = 93002;
 
 >
 
-< absent_days == 0 ?
-  < marks > 70?
-     grade =10;                         # body can have any number of statements
-     good_kids=good_kids+1;
-     marks > 50? 
-     grade =8;
-     else: grade =4;
-  >
-
-  absent_days  < 4 ?  <           # compact indentation
-     marks > 70? grade =8;
-     marks > 50? grade =4;
-     else: grade =0;
-  >
-
-  else: < 
-     marks > 70? grade =4;         # only if portion is mandatory
-     else: grade =0; 
-  >
->
-
-
-
 [float] h, b;
 a<-[0.5]; b<-[3];
 a<-[1.5]; b<-[2];
 a<-[2.5]; b<-[1];
 print( total_area(h,b) );
+
+
+
+
+
 
 

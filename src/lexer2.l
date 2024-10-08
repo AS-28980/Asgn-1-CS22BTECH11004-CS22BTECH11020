@@ -3,7 +3,7 @@
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
-#include "y.tab.h"
+#include "parser2.tab.h"
 
 FILE *token_log;
 int line_number = 1;

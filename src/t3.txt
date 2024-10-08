@@ -10,6 +10,7 @@ func total_area ( [float] h, [float] b ; float) <
 >
 
 
+set float big;
 
 [float] a, b;
 a<-[0.5]; b<-[3];

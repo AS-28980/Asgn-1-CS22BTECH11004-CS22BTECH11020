@@ -1,30 +1,25 @@
-# Directory variables
 SRC_DIR = ../src
 BUILD_DIR = .
 TEST_INPUT_DIR = ../test/input
 TOKENS_DIR = ../test/tokens
+PARSED_DIR = ../test/parsed
+OUTPUT_DIR = ../test/output
 
-# Default target
 all: exe
 
-# Target to compile the lexer
 lexer:
 	flex $(SRC_DIR)/lexer.l
 
-# Target to compile the parser
 parser:
 	yacc -d $(SRC_DIR)/parser.y
 
-# Target to create the executable
 exe: lexer parser
-	gcc y.tab.c -o $(BUILD_DIR)/exe
+	g++ y.tab.c -o $(BUILD_DIR)/exe
 
-# Run command to execute the parser with user-defined parameters
 run: exe
-	@echo "Running parser with input file $(input_file) and token log file $(token_file)..."
-	./$(BUILD_DIR)/exe $(TEST_INPUT_DIR)/$(input_file) $(TOKENS_DIR)/$(token_file)
+	@echo "Running parser with input file $(inp), token log file $(tok), parse log file $(par) and output file $(out)..."
+	./$(BUILD_DIR)/exe $(TEST_INPUT_DIR)/$(inp) $(TOKENS_DIR)/$(tok) $(PARSED_DIR)/$(par) $(OUTPUT_DIR)/$(out)
 
-# Clean up generated files
 clean:
 	rm -f lex.yy.c y.tab.c y.tab.h
 	rm -f $(BUILD_DIR)/exe

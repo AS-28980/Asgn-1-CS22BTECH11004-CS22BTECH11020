@@ -74,7 +74,7 @@ void write_sorted_logs_to_file() {
 %type <val> arg_decl_list argument return_type primitive_data_type data_size 
 %type <val> mappable_value unary_expression value expression function_call 
 %type <val> argument_list size_value accessed_value main_section statement 
-%type <val> print_statement return_statement push_pop_statement 
+%type <val> print_statement return_statement push_pop_statement function_call_statement
 %type <val> declaration_statement declaration_list declaration assignment_statement 
 %type <val> conditional_statement predicate optional_else_if optional_else_clause 
 %type <val> statement_list loop_statement loop_block finally_block init update
@@ -179,7 +179,7 @@ void write_sorted_logs_to_file() {
         }
     | L_SQ_PAR primitive_data_type R_SQ_PAR
         {
-            asprintf(&$$.text, "%s", $2.text);
+            asprintf(&$$.text, "deque <%s>", $2.text);
         }
     | VOID
         {
@@ -401,6 +401,10 @@ void write_sorted_logs_to_file() {
         {
             asprintf(&$$.text, "%s", $1.text);
         }
+    | function_call_statement SEMICOLON
+        {
+            asprintf(&$$.text, "%s;\n", $1.text);
+        }
     | loop_statement
         {
             asprintf(&$$.text, "%s", $1.text);
@@ -414,6 +418,13 @@ void write_sorted_logs_to_file() {
             asprintf(&$$.text, "%s;\n", $1.text);
         }
     | print_statement SEMICOLON
+        {
+            asprintf(&$$.text, "%s;\n", $1.text);
+        }
+    ;
+
+    function_call_statement
+    : function_call
         {
             asprintf(&$$.text, "%s;\n", $1.text);
         }
@@ -437,7 +448,7 @@ void write_sorted_logs_to_file() {
     | RETURN VOID                   
         {
             write_log3("Return Statement", $1.line_number);
-            asprintf(&$$.text, "return void");
+            asprintf(&$$.text, "return");
         }
     ;
 
@@ -450,7 +461,7 @@ void write_sorted_logs_to_file() {
     | L_SQ_PAR expression R_SQ_PAR ARROW IDENTIFIER         
         {
             write_log3("Push/Pop Statement", $1.line_number);
-            asprintf(&$$.text, "%s.push_front(%s)", $1.text, $4.text);
+            asprintf(&$$.text, "%s.push_front(%s)", $5.text, $2.text);
         }
     | IDENTIFIER ARROW L_SQ_PAR IDENTIFIER R_SQ_PAR      
         {
